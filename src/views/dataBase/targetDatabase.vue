@@ -145,7 +145,7 @@
 import { targetList, targetSave, targetDelete } from "../../api/dataBase/targetDatabase";
 import Upload from "../../components/File/Upload.vue";
 const formJson = {
-    adId: "",
+    id: "",
     connectName: "",
     databaseType: "",
     databaseVersion: "",
@@ -362,7 +362,7 @@ export default {
                             this.formVisible = false;
                             if (this.formName === "add") {
                                 // 向头部添加数据
-                                data.adId = response.data.adId;
+                                data.id = response.data.id;
                                 this.list.unshift(data);
                             } else {
                                 this.list.splice(this.index, 1, data);

@@ -3,20 +3,19 @@
  */
 import axios from "../../utils/axios";
 
-// 谁最懂我相关
 
 // 列表
 export function taskList(query) {
     return axios({
-        url: "/admin/targetBase/list",
+        url: "/admin/compareTask/list",
         method: "get",
         params: query
     });
 }
 
 // 保存
-export function targetSave(data, formName, method = "post") {
-    var url = formName === "add" ? "/admin/targetBase/save" : "/admin/targetBase/update";
+export function taskSave(data, formName, method = "post") {
+    var url = formName === "add" ? "/admin/compareTask/save" : "/admin/compareTask/update";
     return axios({
         url: url,
         method: method,
@@ -25,10 +24,26 @@ export function targetSave(data, formName, method = "post") {
 }
 
 // 删除
-export function targetDelete(data) {
+export function taskDelete(data) {
     return axios({
-        url: "/admin/targetBase/delete",
+        url: "/admin/compareTask/delete",
         method: "post",
         data: data
+    });
+}
+
+//获取源数据库下拉列表内容
+export function sourceDataBaseList() {
+    return axios({
+        url: "/admin/compareTask/sourceList",
+        method: "get"
+    });
+}
+
+//获取目标数据库下拉列表内容
+export function targetDataBaseList() {
+    return axios({
+        url: "/admin/compareTask/targetList",
+        method: "get"
     });
 }

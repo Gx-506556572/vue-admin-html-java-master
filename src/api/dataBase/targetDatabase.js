@@ -6,7 +6,7 @@ import axios from "../../utils/axios";
 // 谁最懂我相关
 
 // 列表
-export function adList(query) {
+export function targetList(query) {
     return axios({
         url: "/admin/targetBase/list",
         method: "get",
@@ -15,8 +15,8 @@ export function adList(query) {
 }
 
 // 保存
-export function adSave(data, formName, method = "post") {
-    var url = formName === "add" ? "/admin/ad/ad/save" : "/admin/ad/ad/edit";
+export function targetSave(data, formName, method = "post") {
+    var url = formName === "add" ? "/admin/targetBase/save" : "/admin/targetBase/update";
     return axios({
         url: url,
         method: method,
@@ -25,9 +25,9 @@ export function adSave(data, formName, method = "post") {
 }
 
 // 删除
-export function adDelete(data) {
+export function targetDelete(data) {
     return axios({
-        url: "/admin/ad/ad/delete",
+        url: "/admin/targetBase/delete",
         method: "post",
         data: data
     });

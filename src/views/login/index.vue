@@ -32,10 +32,10 @@
                 </el-button>
             </div>
             <div>
-                <el-button type="primary" style="width:100%;margin-bottom:30px;"
+<!--                <el-button type="primary" style="width:100%;margin-bottom:30px;"
                            @click='showDialog = true'>
                     第三方登录
-                </el-button>
+                </el-button>-->
             </div>
         </el-form>
 

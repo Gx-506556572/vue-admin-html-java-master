@@ -31,17 +31,17 @@
             </el-table-column>
             <el-table-column
                 label="数据库"
-                prop="dataBaseName"
+                prop="databaseName"
                 with="300"
                 :show-overflow-tooltip="true">
             </el-table-column>
             <el-table-column
                 label="数据库类型"
-                prop="dataBaseType">
+                prop="databaseType">
             </el-table-column>
             <el-table-column
                 label="数据库版本"
-                prop="dataBaseVersion"
+                prop="databaseVersion"
                 with="300"
                 :show-overflow-tooltip="true">
             </el-table-column>
@@ -81,47 +81,54 @@
             :before-close="hideForm"
             style="--el-dialog-margin-top: 2%; --el-dialog-width: 50%;">
             <el-form :model="formData" :rules="formRules" ref="dataForm">
-                <el-form-item label="连接名称" prop="connectName" label-width="100px">
-                    <el-input v-model="formData.connectName" auto-complete="off"></el-input>
+                <el-form-item label="连接名称" prop="connectName"  label-width="100px">
+                    <el-input v-model="formData.connectName" placeholder="请输入连接名称" auto-complete="off"></el-input>
                 </el-form-item>
                 <el-row :gutter="10">
                     <el-col :span="12">
-                <el-form-item label="数据库类型" prop="dataBaseType" style="font-size: 8px;"label-width="100px">
-                    <el-input v-model="formData.dataBaseType" ></el-input>
-                </el-form-item>
+                        <el-form-item label="数据库类型" prop="databaseType"  label-width="100px">
+                            <el-select v-model="formData.databaseType"  @change="handleDatabaseTypeChange" auto-complete="off" filterable  placeholder="请选择数据库类型">
+                                <el-option
+                                    v-for="item in options"
+                                    :key="item.value"
+                                    :label="item.label"
+                                    :value="item.value">
+                                </el-option>
+                            </el-select>
+                        </el-form-item>
                     </el-col>
                     <el-col :span="12">
-                <el-form-item label="数据库版本" prop="dataBaseVersion" style="font-size: 8px;" label-width="100px">
-                    <el-input v-model="formData.dataBaseVersion"></el-input>
-                </el-form-item>
+                        <el-form-item label="数据库版本" prop="databaseVersion"  label-width="100px">
+                            <el-input v-model="formData.databaseVersion" placeholder="请输入数据库版本" auto-complete="off"></el-input>
+                        </el-form-item>
                     </el-col>
                 </el-row>
                 <el-row :gutter="10">
                     <el-col :span="12">
                         <el-form-item label="服务器地址" prop="serverUrl" label-width="100px">
-                            <el-input v-model="formData.serverUrl"></el-input>
+                            <el-input v-model="formData.serverUrl"  placeholder="请输入服务器地址"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
                         <el-form-item label="服务器端口" prop="serverPort" label-width="100px">
-                            <el-input v-model="formData.serverPort"></el-input>
+                            <el-input v-model="formData.serverPort" placeholder="请输入服务器端口"></el-input>
                         </el-form-item>
                     </el-col>
                 </el-row>
-                <el-form-item label="用户名" prop="username" label-width="100px">
-                    <el-input v-model="formData.username" auto-complete="off"></el-input>
+                <el-form-item label="用户名" prop="username"  label-width="100px">
+                    <el-input v-model="formData.username" placeholder="请输入用户名" auto-complete="off"></el-input>
                 </el-form-item>
-                <el-form-item label="密码" prop="password" label-width="100px">
-                    <el-input  type="password"  show-password v-model="formData.password" auto-complete="off"></el-input>
+                <el-form-item label="密码" prop="password"   label-width="100px">
+                    <el-input  type="password" placeholder="请输入密码" show-password v-model="formData.password" auto-complete="off"></el-input>
                 </el-form-item>
-                <el-form-item label="数据库" prop="dataBaseName" label-width="100px">
-                    <el-input v-model="formData.dataBaseName" auto-complete="off"></el-input>
+                <el-form-item label="数据库" prop="databaseName"  label-width="100px">
+                    <el-input v-model="formData.databaseName"  placeholder="请输入数据库" auto-complete="off"></el-input>
                 </el-form-item>
-                <el-form-item label="驱动" prop="dataBaseDriver" label-width="100px">
-                    <el-input v-model="formData.dataBaseDriver" auto-complete="off"></el-input>
+                <el-form-item label="驱动" prop="databaseDriver"  label-width="100px">
+                    <el-input v-model="formData.databaseDriver"  placeholder="请输入驱动" auto-complete="off"></el-input>
                 </el-form-item>
-                <el-form-item label="URL" prop="dataBaseUrl" label-width="100px">
-                    <el-input v-model="formData.dataBaseUrl" auto-complete="off"></el-input>
+                <el-form-item label="URL" prop="databaseUrl"   label-width="100px">
+                    <el-input v-model="formData.databaseUrl" placeholder="请输入URL" auto-complete="off"></el-input>
                 </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
@@ -135,31 +142,20 @@
 </template>
 
 <script>
-import { adList, adSave, adDelete } from "../../api/ad/ad";
+import { sourceList, sourceSave, sourceDelete } from "../../api/dataBase/sourceDatabase";
 import Upload from "../../components/File/Upload.vue";
 const formJson = {
     adId: "",
     connectName: "",
-    describe: "",
-    pic: "",
-    picUrl: "",
-    jumpType: "",
-    jumpUrl: "",
-    iosUrl: "",
-    androidUrl: "",
-    wxaAppid: "",
-    channelType: 0,
-    channelList: [],
-    androidVersionType: 0,
-    androidVersionList: [],
-    iosVersionType: 0,
-    iosVersionList: [],
-    newShowStartNum: 0,
-    newShowMaxNum: 0,
-    oldShowStartNum: 0,
-    oldShowMaxNum: 0,
-    endTime: "",
-    eventName: "",
+    databaseType: "",
+    databaseVersion: "",
+    serverUrl: "",
+    serverPort: "",
+    username: "",
+    password: "",
+    databaseName: "",
+    databaseDriver: "",
+    databaseUrl: "",
     status: 1
 };
 export default {
@@ -170,6 +166,13 @@ export default {
                 page: 1,
                 limit: 20
             },
+            options: [{
+                value: 'MYSQL',
+                label: 'MYSQL'
+            }, {
+                value: 'KINGBASE',
+                label: 'KINGBASE'
+            }],
             channelListInput: "",
             androidVersionListInput: "",
             iosVersionListInput: "",
@@ -193,71 +196,68 @@ export default {
                         trigger: "blur"
                     }
                 ],
-                pic: [
+                databaseType: [
                     {
                         required: true,
-                        message: "请选择封面图片",
-                        trigger: "change"
-                    }
-                ],
-                jumpType: [
-                    {
-                        required: true,
-                        message: "请选择跳转方式",
-                        trigger: "change"
-                    }
-                ],
-                jumpUrl: [
-                    {
-                        required: true,
-                        message: "请输入跳转链接",
+                        message: "请选择数据库类型",
                         trigger: "blur"
                     }
                 ],
-                androidUrl: [
+                dataBaseVersion: [
                     {
                         required: true,
-                        message: "请输入Android类名",
+                        message: "请填写数据库版本",
                         trigger: "blur"
                     }
                 ],
-                iosUrl: [
+                serverUrl: [
                     {
                         required: true,
-                        message: "请输入IOS类名",
+                        message: "请输入服务器地址",
                         trigger: "blur"
                     }
                 ],
-                wxaAppid: [
+                serverPort: [
                     {
                         required: true,
-                        message: "请输入小程序Appid",
+                        message: "请输入服务器端口",
                         trigger: "blur"
                     }
                 ],
-                channelList: [
+                username: [
                     {
                         required: true,
-                        message: "请输入至少一个渠道名单",
-                        trigger: "change"
+                        message: "请输入用户名",
+                        trigger: "blur"
                     }
                 ],
-                androidVersionList: [
+                password: [
                     {
                         required: true,
-                        message: "请输入至少一个Android版本名单",
-                        trigger: "change"
+                        message: "请输入密码",
+                        trigger: "blur"
                     }
                 ],
-                iosVersionList: [
+                databaseName: [
                     {
                         required: true,
-                        message: "请输入至少一个iOS版本名单",
-                        trigger: "change"
+                        message: "请输入数据库",
+                        trigger: "blur"
                     }
                 ],
-                status: [
-                    { required: true, message: "请选择状态", trigger: "change" }
+                databaseDriver: [
+                    {
+                        required: true,
+                        message: "请输入驱动",
+                        trigger: "blur"
+                    }
+                ],
+                databaseUrl: [
+                    {
+                        required: true,
+                        message: "请输入URL",
+                        trigger: "blur"
+                    }
                 ]
             },
             deleteLoading: false
@@ -267,6 +267,19 @@ export default {
         Upload
     },
     methods: {
+        handleDatabaseTypeChange(value) {
+            console.log(value)
+            if (value === 'MYSQL') {
+                this.formData.serverPort = 3306;
+                this.formData.databaseVersion =5.5;
+                this.formData.databaseDriver = 'com.mysql.jdbc.Driver';
+            }
+            if (value === 'KINGBASE'){
+                this.formData.serverPort = 54321;
+                this.formData.databaseVersion = 'V9';
+                this.formData.databaseDriver = 'com.kingbase8.Driver';
+            }
+        },
         onReset() {
             this.$router.push({
                 path: ""
@@ -285,17 +298,13 @@ export default {
             });
             this.getList();
         },
-        handleSizeChange(val) {
-            this.query.limit = val;
-            this.getList();
-        },
         handleCurrentChange(val) {
             this.query.page = val;
             this.getList();
         },
         getList() {
             this.loading = true;
-            adList(this.query)
+            sourceList(this.query)
                 .then(response => {
                     this.loading = false;
                     this.list = response.data.list || [];
@@ -306,85 +315,6 @@ export default {
                     this.list = [];
                     this.total = 0;
                 });
-        },
-        // 删除渠道
-        handleChannelListClose(index) {
-            console.log(index);
-            // 更改值
-            this.formData.channelList.splice(index, 1);
-        },
-        // 添加渠道白名单
-        handleChannelListSubmit() {
-            // 更改值
-            if (
-                this.channelListInput &&
-                this.formData.channelList.length < 15
-            ) {
-                let arr = this.channelListInput.split(",");
-                for (let i in arr) {
-                    if (
-                        arr[i] !== "" &&
-                        (this.formData.channelList.length === 0 ||
-                            this.formData.channelList.indexOf(arr[i]) < 0)
-                    ) {
-                        this.formData.channelList.push(arr[i]);
-                    }
-                }
-                this.channelListInput = "";
-                this.$refs.channelListRef.focus();
-            }
-        },
-        // 删除Android版本
-        handleAndroidVersionListClose(index) {
-            // 更改值
-            this.formData.androidVersionList.splice(index, 1);
-        },
-        // 添加Android版本
-        handleAndroidVersionListSubmit() {
-            // 更改值
-            if (
-                this.androidVersionListInput &&
-                this.formData.androidVersionList.length < 15
-            ) {
-                let arr = this.androidVersionListInput.split(",");
-                for (let i in arr) {
-                    let avList = this.formData.androidVersionList;
-                    if (
-                        arr[i] !== "" &&
-                        (avList.length === 0 || avList.indexOf(arr[i]) < 0)
-                    ) {
-                        this.formData.androidVersionList.push(arr[i]);
-                    }
-                }
-                this.androidVersionListInput = "";
-                this.$refs.androidVersionListRef.focus();
-            }
-        },
-        // 删除Ios版本
-        handleIosVersionListClose(index) {
-            // 更改值
-            this.formData.iosVersionList.splice(index, 1);
-        },
-        // 添加Ios版本
-        handleIosVersionListSubmit() {
-            // 更改值
-            if (
-                this.iosVersionListInput &&
-                this.formData.iosVersionList.length < 15
-            ) {
-                let arr = this.iosVersionListInput.split(",");
-                for (let i in arr) {
-                    if (
-                        arr[i] !== "" &&
-                        (this.formData.iosVersionList.length === 0 ||
-                            this.formData.iosVersionList.indexOf(arr[i]) < 0)
-                    ) {
-                        this.formData.iosVersionList.push(arr[i]);
-                    }
-                }
-                this.iosVersionListInput = "";
-                this.$refs.iosVersionListRef.focus();
-            }
         },
         // 刷新表单
         resetForm() {
@@ -421,7 +351,7 @@ export default {
                 if (valid) {
                     this.formLoading = true;
                     let data = Object.assign({}, this.formData);
-                    adSave(data, this.formName)
+                    sourceSave(data, this.formName)
                         .then(response => {
                             this.formLoading = false;
                             if (response.code) {
@@ -446,14 +376,14 @@ export default {
         },
         // 删除
         handleDel(index, row) {
-            if (row.adId) {
+            if (row.id) {
                 this.$confirm("确认删除该记录吗?", "提示", {
                     type: "warning"
                 })
                     .then(() => {
-                        let para = { adId: row.adId };
+                        let para = { id: row.id };
                         this.deleteLoading = true;
-                        adDelete(para)
+                        sourceDelete(para)
                             .then(response => {
                                 this.deleteLoading = false;
                                 if (response.code) {

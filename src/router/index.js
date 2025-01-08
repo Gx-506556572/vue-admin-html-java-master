@@ -20,8 +20,9 @@ import tinymce from "../views/components/tinymce-demo.vue";
 import upload from "../views/components/upload-demo.vue";
 
 // 广告管理
-import adSite from "../views/adManage/adSite.vue";
-import ad from "../views/adManage/ad.vue";
+import sourceDatabase from "../views/dataBase/sourceDatabase.vue";
+import targetDatabase from "../views/dataBase/targetDatabase.vue";
+import task from "../views/compareTask/task.vue";
 
 // Vue.use(VueRouter);
 
@@ -180,8 +181,8 @@ export const asyncRouterMap = [
         ]
     },
     {
-        path: "/adManage",
-        redirect: "/adManage/adSite",
+        path: "/dataBase",
+        redirect: "/dataBase/sourceDatabase",
         component: Home,
         icon: "guanggao",
         name: "数据源管理",
@@ -191,8 +192,8 @@ export const asyncRouterMap = [
         // noDropdown: true,
         children: [
             {
-                path: "adSite",
-                component: adSite,
+                path: "sourceDatabase",
+                component: sourceDatabase,
                 name: "源数据库管理",
                 icon: "",
                 meta: {
@@ -200,12 +201,34 @@ export const asyncRouterMap = [
                 }
             },
             {
-                path: "ad",
-                component: ad,
+                path: "targetDatabase",
+                component: targetDatabase,
                 name: "目标数据库管理",
                 icon: "",
                 meta: {
                     // authRule: ["admin/ad/ad/index"]
+                }
+            }
+        ]
+    },
+    {
+        path: "/compareTask",
+        redirect: "/compareTask/task",
+        component: Home,
+        icon: "guanggao",
+        name: "比对任务管理",
+        meta: {
+            // authRule: ["ad_manage"]
+        },
+        // noDropdown: true,
+        children: [
+            {
+                path: "task",
+                component: task,
+                name: "比对任务",
+                icon: "",
+                meta: {
+                    // authRule: ["admin/ad/site/index"]
                 }
             }
         ]

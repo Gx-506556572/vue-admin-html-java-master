@@ -111,13 +111,20 @@
                 <el-button type="primary" @click.native="formSubmit()" :loading="formLoading">提交</el-button>
             </div>
         </el-dialog>
+        <!-- 对话框 -->
+        <el-dialog title="对比结果数据" :visible.sync="dialogVisible" width="50%">
+            <pre>{{ taskData }}</pre>
+            <span slot="footer" class="dialog-footer">
+        <el-button @click="dialogVisible = false">关闭</el-button>
+      </span>
+        </el-dialog>
 
     </div>
 
 </template>
 
 <script>
-import { taskList, taskSave, taskDelete,sourceDataBaseList,targetDataBaseList } from "../../api/task/task";
+import { taskList, taskSave, taskDelete,sourceDataBaseList,targetDataBaseList,taskStart } from "../../api/task/task";
 import Upload from "../../components/File/Upload.vue";
 const formJson = {
     id: "",
@@ -137,6 +144,8 @@ export default {
                 page: 1,
                 limit: 20
             },
+            dialogVisible: false, // 对话框显示状态
+            taskData: null, // 存储返回的 data
             sourceDataBaseOptionsList: [],
             targetDataBaseOptionsList: [],
             list: [],
@@ -259,6 +268,24 @@ export default {
                 this.index = index;
                 this.formName = "edit";
             }
+        },
+        handleStart(index, row){
+            this.loading = true;
+            taskStart(row).then(res => {
+
+                if (res.code==0) {
+                    this.dialogVisible = true; // 显示对话框
+                    console.log(res)
+                    this.$message.success('任务启动成功');
+                    this.taskData = res.data; // 存储返回的 data
+
+                }
+                this.loading = false; // 关闭加载状态
+            }).catch(err => {
+                console.error(err);
+                this.$message.error('任务启动失败');
+                this.loading = false; // 关闭加载状态
+            });
         },
         formSubmit() {
             this.$refs["dataForm"].validate(valid => {

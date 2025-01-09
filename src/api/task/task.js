@@ -47,3 +47,12 @@ export function targetDataBaseList() {
         method: "get"
     });
 }
+//启动任务
+export function taskStart(data) {
+    return axios({
+        url: "/admin/compareTask/startTask",
+        method: "post",
+        data: data
+    });
+}
+

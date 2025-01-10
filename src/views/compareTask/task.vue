@@ -44,6 +44,11 @@
                 prop="taskStatusDesc"
                 with="300"
                 :show-overflow-tooltip="true">
+                <template slot-scope="scope">
+                    <el-tag
+                        :type="scope.row.taskStatusDesc === '未启动' ? 'info' : 'success'"
+                        disable-transitions>{{scope.row.taskStatusDesc}}</el-tag>
+                </template>
             </el-table-column>
             <el-table-column
                 label="开始时间"
@@ -270,9 +275,8 @@ export default {
             }
         },
         handleStart(index, row){
-            this.loading = true;
+           // this.loading = true;
             taskStart(row).then(res => {
-
                 if (res.code==0) {
                     this.dialogVisible = true; // 显示对话框
                     console.log(res)

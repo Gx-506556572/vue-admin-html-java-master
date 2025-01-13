@@ -20,6 +20,7 @@
             <el-table-column
                 label="序号"
                 prop="id"
+                width="150"
                 fixed>
             </el-table-column>
             <el-table-column
@@ -46,7 +47,10 @@
                 :show-overflow-tooltip="true">
                 <template slot-scope="scope">
                     <el-tag
-                        :type="scope.row.taskStatusDesc === '未启动' ? 'info' : 'success'"
+                        :type="scope.row.taskStatusDesc === '未启动' ? 'info' :
+                               scope.row.taskStatusDesc === '运行中' ? 'warning' :
+                               scope.row.taskStatusDesc === '运行完成' ? 'success' :
+                               scope.row.taskStatusDesc === '启动失败' ? 'danger' : 'default'"
                         disable-transitions>{{scope.row.taskStatusDesc}}</el-tag>
                 </template>
             </el-table-column>
@@ -66,7 +70,8 @@
                 label="操作"
                 fixed="right">
                 <template slot-scope="scope">
-                    <el-button type="text" size="small" v-if="scope.row.taskStatus == 0" @click.native="handleStart(scope.$index, scope.row)">启动</el-button>
+                    <el-button type="text" size="small" v-if="scope.row.taskStatus == 0 || scope.row.taskStatus ==3" @click.native="handleStart(scope.$index, scope.row)">启动</el-button>
+                    <el-button type="text" size="small" v-if="scope.row.taskStatus == 2" @click.native="handleViewDetail(scope.$index, scope.row)">查看详情</el-button>
                     <el-button type="text" size="small" @click.native="handleForm(scope.$index, scope.row)">编辑</el-button>
                     <el-button type="text" size="small" @click.native="handleDel(scope.$index, scope.row)">删除</el-button>
                 </template>
@@ -116,20 +121,35 @@
                 <el-button type="primary" @click.native="formSubmit()" :loading="formLoading">提交</el-button>
             </div>
         </el-dialog>
-        <!-- 对话框 -->
-        <el-dialog title="对比结果数据" :visible.sync="dialogVisible" width="50%">
-            <pre>{{ taskData }}</pre>
-            <span slot="footer" class="dialog-footer">
-        <el-button @click="dialogVisible = false">关闭</el-button>
-      </span>
+        <!--任务详情表单-->
+        <el-dialog title="任务详情" :visible.sync="taskVisible" width="80%">
+            <el-form :inline="true"  :model="searchQuery" class="query-form" size="mini">
+                <el-form-item label="任务描述">
+                    <el-input v-model="searchQuery.taskDetail" placeholder="请输入任务描述"></el-input>
+                </el-form-item>
+                <el-form-item>
+                    <el-button type="primary" @click="taskSearch">查询</el-button>
+                </el-form-item>
+            </el-form>
+            <el-table :data="filteredTaskDetails" style="width: 100%">
+                <el-table-column type="index" label="序号" width="50px"></el-table-column>
+                <el-table-column prop="taskDetail" label="任务描述"></el-table-column>
+                <el-table-column prop="createTime" label="创建时间" width="180px"></el-table-column>
+            </el-table>
+            <el-pagination
+                @current-change="taskCurrentChange"
+                :current-page="searchQuery.pagez "
+                :page-size="searchQuery.limit"
+                layout="prev, pager, next"
+                :total="taskDetailTotal">
+            </el-pagination>
         </el-dialog>
-
     </div>
 
 </template>
 
 <script>
-import { taskList, taskSave, taskDelete,sourceDataBaseList,targetDataBaseList,taskStart } from "../../api/task/task";
+import { taskList, taskSave, taskDelete,sourceDataBaseList,targetDataBaseList,taskStart,viewResult } from "../../api/task/task";
 import Upload from "../../components/File/Upload.vue";
 const formJson = {
     id: "",
@@ -142,6 +162,12 @@ const formJson = {
     taskStatusDesc: ""
 };
 export default {
+    props: {
+        taskDetails: {
+            type: Array,
+            default: () => []
+        }
+    },
     data() {
         return {
             query: {
@@ -149,8 +175,14 @@ export default {
                 page: 1,
                 limit: 20
             },
-            dialogVisible: false, // 对话框显示状态
-            taskData: null, // 存储返回的 data
+            searchQuery:{
+                taskDetail: "",
+                page: 1,
+                limit: 20,
+                taskId: ""
+            },
+            filteredTaskDetails:[],
+            taskDetailTotal : 0,
             sourceDataBaseOptionsList: [],
             targetDataBaseOptionsList: [],
             list: [],
@@ -164,6 +196,7 @@ export default {
             },
             formLoading: false,
             formVisible: false,
+            taskVisible: false,
             formData: formJson,
             formRules: {
                 connectName: [
@@ -275,20 +308,47 @@ export default {
             }
         },
         handleStart(index, row){
-           // this.loading = true;
             taskStart(row).then(res => {
                 if (res.code==0) {
-                    this.dialogVisible = true; // 显示对话框
-                    console.log(res)
-                    this.$message.success('任务启动成功');
-                    this.taskData = res.data; // 存储返回的 data
-
+                    this.$message.success('任务启动成功，正在运行中，请稍后');
+                    this.onSubmit();
                 }
-                this.loading = false; // 关闭加载状态
             }).catch(err => {
-                console.error(err);
                 this.$message.error('任务启动失败');
-                this.loading = false; // 关闭加载状态
+            });
+        },
+        taskCurrentChange(val) {
+            this.searchQuery.page = val;
+            this.getTaskDetailList();
+        },
+        taskSearch(){
+          this.searchQuery.page = 1;
+            this.getTaskDetailList();
+        },
+
+        getTaskDetailList(){
+            viewResult(this.searchQuery).then(res => {
+                if (res.code==0) {
+                    this.filteredTaskDetails = res.data.list || [];
+                    this.taskDetailTotal = res.data.total || 0;
+                }
+            }).catch(err => {
+                this.$message.error('任务启动失败');
+            });
+        },
+
+        handleViewDetail(index, row){
+            this.taskVisible = true;
+            this.searchQuery.page = 1;
+            this.searchQuery.taskDetail = "";
+            this.searchQuery.taskId = row.id;
+            viewResult(this.searchQuery).then(res => {
+                if (res.code==0) {
+                    this.filteredTaskDetails = res.data.list || [];
+                    this.taskDetailTotal = res.data.total || 0;
+                }
+            }).catch(err => {
+
             });
         },
         formSubmit() {
@@ -349,14 +409,8 @@ export default {
                     });
             }
         },
-        //启动任务
-        handlStart(){
 
-        },
-        onSelectPic(filePath, filePathUrl) {
-            this.formData.pic = filePath;
-            this.formData.picUrl = filePathUrl;
-        }
+
     },
     filters: {
         statusFilterType(status) {

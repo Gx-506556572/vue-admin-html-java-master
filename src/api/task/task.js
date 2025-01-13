@@ -55,4 +55,13 @@ export function taskStart(data) {
         data: data
     });
 }
+//查看任务详情
+export function viewResult(data) {
+    return axios({
+        url: "admin/compareTask/viewResult",
+        method: "post",
+        data: data
+    });
+}
+
 

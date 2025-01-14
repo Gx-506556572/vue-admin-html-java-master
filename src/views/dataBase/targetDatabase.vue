@@ -78,6 +78,7 @@
         <!--表单-->
         <el-dialog
             title="数据源连接信息"
+            v-loading="dialogloading"
             :visible.sync="formVisible"
             :before-close="hideForm"
             style="--el-dialog-margin-top: 2%; --el-dialog-width: 50%;">
@@ -147,6 +148,7 @@
 import { targetList, targetSave, targetDelete } from "../../api/dataBase/targetDatabase";
 import { connectTest } from "../../api/task/task";
 import Upload from "../../components/File/Upload.vue";
+import dialog from "element-ui/packages/dialog";
 const formJson = {
     id: "",
     connectName: "",
@@ -162,6 +164,11 @@ const formJson = {
     status: 1
 };
 export default {
+    computed: {
+        dialog() {
+            return dialog
+        }
+    },
     data() {
         return {
             query: {
@@ -175,6 +182,9 @@ export default {
             }, {
                 value: 'KINGBASE',
                 label: 'KINGBASE'
+            }, {
+                value: 'HighGo',
+                label: 'HighGo'
             }],
             channelListInput: "",
             androidVersionListInput: "",
@@ -182,6 +192,7 @@ export default {
             list: [],
             total: 0,
             loading: true,
+            dialogloading: true,
             index: null,
             formName: null,
             formMap: {
@@ -271,7 +282,6 @@ export default {
     },
     methods: {
         handleDatabaseTypeChange(value) {
-            console.log(value)
             if (value === 'MYSQL') {
                 this.formData.serverPort = 3306;
                 this.formData.databaseVersion =5.5;
@@ -281,6 +291,11 @@ export default {
                 this.formData.serverPort = 54321;
                 this.formData.databaseVersion = 'V9';
                 this.formData.databaseDriver = 'com.kingbase8.Driver';
+            }
+            if (value === 'HighGo'){
+                this.formData.serverPort = 5866;
+                this.formData.databaseVersion = 'V4';
+                this.formData.databaseDriver = 'com.highgo.jdbc.Driver';
             }
         },
         onReset() {
@@ -330,24 +345,28 @@ export default {
         },
         //测试连接
         connectTest(){
+            this.dialogloading = true
             connectTest(this.formData).then(response => {
                 if (response.code == 0) {
-                    this.$message.success(response.data);
-                    return;
-                }else if (response.code == 1) {
-                    this.$message.error(response.data);
-                    return;
+                    this.dialogloading = false
+                    this.$message.success(response.message);
+                }else if (response.code == -1) {
+                    this.dialogloading = false
+                    this.$message.error(response.message);
+
                 }
             })
         },
         handleConnectTest(index, row){
+            this.loading = true
             connectTest(row).then(response => {
                 if (response.code == 0) {
-                    this.$message.success(response.data);
-                    return;
-                }else if (response.code == 1) {
-                    this.$message.error(response.data);
-                    return;
+                    this.loading = false
+                    this.$message.success(response.message);
+                }else if (response.code == -1) {
+                    this.loading = false
+                    this.$message.error(response.message);
+
                 }
             })
         },

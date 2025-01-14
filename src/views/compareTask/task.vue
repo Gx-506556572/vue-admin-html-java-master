@@ -93,7 +93,7 @@
             style="--el-dialog-margin-top: 2%; --el-dialog-width: 50%;">
             <el-form :model="formData" :rules="formRules" ref="dataForm">
                 <el-form-item label="任务名称" prop="taskName"  label-width="140px">
-                    <el-input v-model="formData.taskName" placeholder="请输入任务名称" auto-complete="off"></el-input>
+                    <el-input v-model="formData.taskName" placeholder="请输入任务名称" auto-complete="off" clearable="true"></el-input>
                 </el-form-item>
                         <el-form-item label="源数据库连接名" prop="sourceDatabaseName"  label-width="140px">
                             <el-select v-model="formData.sourceId"  auto-complete="off" filterable  placeholder="请选择源数据库连接名">
@@ -125,7 +125,11 @@
         <el-dialog title="任务详情" :visible.sync="taskVisible" width="80%">
             <el-form :inline="true"  :model="searchQuery" class="query-form" size="mini">
                 <el-form-item label="任务描述">
-                    <el-input v-model="searchQuery.taskDetail" placeholder="请输入任务描述"></el-input>
+                    <el-input v-model="searchQuery.taskDetail" placeholder="请输入任务描述" clearable="true"></el-input>
+
+                </el-form-item>
+                <el-form-item label="任务类型">
+                <el-input v-model="searchQuery.taskType" placeholder="请输入任务类型" clearable="true"></el-input>
                 </el-form-item>
                 <el-form-item>
                     <el-button type="primary" @click="taskSearch">查询</el-button>
@@ -133,12 +137,13 @@
             </el-form>
             <el-table :data="filteredTaskDetails" style="width: 100%">
                 <el-table-column type="index" label="序号" width="50px"></el-table-column>
+                <el-table-column prop="taskType" label="任务类型" width="180px" ></el-table-column>
                 <el-table-column prop="taskDetail" label="任务描述"></el-table-column>
                 <el-table-column prop="createTime" label="创建时间" width="180px"></el-table-column>
             </el-table>
             <el-pagination
                 @current-change="taskCurrentChange"
-                :current-page="searchQuery.pagez "
+                :current-page="searchQuery.page "
                 :page-size="searchQuery.limit"
                 layout="prev, pager, next"
                 :total="taskDetailTotal">
@@ -177,6 +182,7 @@ export default {
             },
             searchQuery:{
                 taskDetail: "",
+                taskType: "",
                 page: 1,
                 limit: 20,
                 taskId: ""
@@ -341,6 +347,7 @@ export default {
             this.taskVisible = true;
             this.searchQuery.page = 1;
             this.searchQuery.taskDetail = "";
+            this.searchQuery.taskType = "";
             this.searchQuery.taskId = row.id;
             viewResult(this.searchQuery).then(res => {
                 if (res.code==0) {

@@ -175,6 +175,9 @@ export default {
             }, {
                 value: 'KINGBASE',
                 label: 'KINGBASE'
+            }, {
+                value: 'HighGo',
+                label: 'HighGo'
             }],
             channelListInput: "",
             androidVersionListInput: "",
@@ -271,7 +274,6 @@ export default {
     },
     methods: {
         handleDatabaseTypeChange(value) {
-            console.log(value)
             if (value === 'MYSQL') {
                 this.formData.serverPort = 3306;
                 this.formData.databaseVersion =5.5;
@@ -281,6 +283,11 @@ export default {
                 this.formData.serverPort = 54321;
                 this.formData.databaseVersion = 'V9';
                 this.formData.databaseDriver = 'com.kingbase8.Driver';
+            }
+            if (value === 'HighGo'){
+                this.formData.serverPort = 5866;
+                this.formData.databaseVersion = 'V4';
+                this.formData.databaseDriver = 'com.highgo.jdbc.Driver';
             }
         },
         onReset() {
@@ -336,24 +343,27 @@ export default {
         },
         //测试连接
         connectTest(){
+            this.loading = true
             connectTest(this.formData).then(response => {
                 if (response.code == 0) {
-                    this.$message.success(response.data);
-                    return;
-                }else if (response.code == 1) {
-                    this.$message.error(response.data);
-                    return;
+                    this.loading = false
+                    this.$message.success(response.message);
+                }else if (response.code == -1) {
+                    this.loading = false
+                    this.$message.error(response.message);
+
                 }
-         })
+            })
         },
         handleConnectTest(index, row){
+            this.loading = true
             connectTest(row).then(response => {
                 if (response.code == 0) {
-                    this.$message.success(response.data);
-                    return;
-                }else if (response.code == 1) {
-                    this.$message.error(response.data);
-                    return;
+                    this.loading = false
+                    this.$message.success(response.message);
+                }else if (response.code == -1) {
+                    this.loading = false
+                    this.$message.error(response.message);
                 }
             })
         },

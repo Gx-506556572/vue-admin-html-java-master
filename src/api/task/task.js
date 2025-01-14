@@ -63,5 +63,12 @@ export function viewResult(data) {
         data: data
     });
 }
+export function connectTest(data) {
+    return axios({
+        url: "/admin/compareTask/connectTest",
+        method: "post",
+        data: data
+    });
+}
 
 

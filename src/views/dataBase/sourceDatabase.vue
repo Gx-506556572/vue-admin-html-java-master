@@ -62,7 +62,8 @@
                 fixed="right">
                 <template slot-scope="scope">
                     <el-button type="text" size="small" @click.native="handleForm(scope.$index, scope.row)">编辑</el-button>
-                    <el-button type="text" size="small" @click.native="handleDel(scope.$index, scope.row)">删除</el-button>
+                    <el-button type="text" size="small" @click.native="handleConnectTest(scope.$index, scope.row)" class="green-text-button">测试</el-button>
+                    <el-button type="text" size="small" @click.native="handleDel(scope.$index, scope.row)" class="red-text-button">删除</el-button>
                 </template>
             </el-table-column>
         </el-table>
@@ -132,6 +133,7 @@
                 </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
+                <el-button type="success" @click.native="connectTest">测试</el-button>
                 <el-button @click.native="hideForm">取消</el-button>
                 <el-button type="primary" @click.native="formSubmit()" :loading="formLoading">提交</el-button>
             </div>
@@ -143,6 +145,7 @@
 
 <script>
 import { sourceList, sourceSave, sourceDelete } from "../../api/dataBase/sourceDatabase";
+import { connectTest } from "../../api/task/task";
 import Upload from "../../components/File/Upload.vue";
 const formJson = {
     id: "",
@@ -331,6 +334,29 @@ export default {
             this.formVisible = !this.formVisible;
             return true;
         },
+        //测试连接
+        connectTest(){
+            connectTest(this.formData).then(response => {
+                if (response.code == 0) {
+                    this.$message.success(response.data);
+                    return;
+                }else if (response.code == 1) {
+                    this.$message.error(response.data);
+                    return;
+                }
+         })
+        },
+        handleConnectTest(index, row){
+            connectTest(row).then(response => {
+                if (response.code == 0) {
+                    this.$message.success(response.data);
+                    return;
+                }else if (response.code == 1) {
+                    this.$message.error(response.data);
+                    return;
+                }
+            })
+        },
         // 显示表单
         handleForm(index, row) {
             this.formVisible = true;
@@ -437,4 +463,6 @@ export default {
 </script>
 
 <style type="text/scss" lang="scss">
+@import "../../styles/base.scss";
+
 </style>

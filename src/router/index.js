@@ -33,7 +33,7 @@ const err404 = r =>
 const login = r =>
     require.ensure([], () => r(require("../views/login/index.vue")), "home");
 const main = r =>
-    require.ensure([], () => r(require("../views/home/main.vue")), "home");
+    require.ensure([], () => r(require("../views/dataBase/sourceDatabase.vue")), "home");
 
 // 注意 权限字段 authRule （严格区分大小写）
 export const constantRouterMap = [
@@ -69,24 +69,9 @@ export const constantRouterMap = [
     {
         path: "/",
         component: Home,
-        redirect: "/readme",
+        redirect: "/dataBase",
         name: "首页",
         hidden: true
-    },
-    {
-        path: "/readme",
-        component: Home,
-        redirect: "/readme/main",
-        icon: "shouye",
-        name: "控制台",
-        noDropdown: true,
-        hidden: true,
-        children: [
-            {
-                path: "main",
-                component: main
-            }
-        ]
     },
     {
         path: "/components",

@@ -6,8 +6,8 @@
  * imgBaseUrl: 图片所在域名地址
  *
  */
-let BASE_URL = process.env.VUE_APP_API_BASE;
- let ROUTER_MODE = "history";
-//let ROUTER_MODE = "";
+let BASE_URL = "http://localhost:9998";
+ //let ROUTER_MODE = "history";
+let ROUTER_MODE = "";
 let IMG_BASE_URL = BASE_URL;
 export { BASE_URL, ROUTER_MODE, IMG_BASE_URL };
